@@ -7,7 +7,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit3, Trash2, Package, CheckCircle, Clock, XCircle, ArrowLeft, AlertTriangle, LogOut, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getProductsBySeller, addProduct, updateProduct, deleteProduct, getUserById, logoutUser } from '../db';
+import { getProductsBySeller, addProduct, updateProduct, deleteProduct, getUserById } from '../db';
+import { logout } from '../auth';
 import { CATEGORIES } from '../config';
 import { showToast } from '../components/Toast';
 import type { Product, User } from '../data';
@@ -75,7 +76,7 @@ export default function SellerDashboard({ session, setSession }: SellerDashboard
   };
 
   const handleLogout = async () => {
-    await logoutUser();
+    await logout();
     setSession(null);
     navigate('/');
   };

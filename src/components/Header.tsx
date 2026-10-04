@@ -5,7 +5,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, LogOut, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { getCartCount, logoutUser } from '../db';
+import { getCartCount } from '../db';
+import { logout } from '../auth';
 import { subscribeToCart } from '../cartEvents';
 import { SITE_NAME } from '../config';
 import type { User as UserType } from '../data';
@@ -33,7 +34,7 @@ export default function Header({ session, setSession, showSearch, onSearch, sear
   }, []);
 
   const handleLogout = async () => {
-    await logoutUser();
+    await logout();
     setSession(null);
     navigate('/');
   };

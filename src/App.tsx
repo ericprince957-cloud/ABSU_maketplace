@@ -8,6 +8,7 @@ import { seedIfEmpty, getSession, type User } from './db';
 import Home from './pages/Home';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 import SellerDashboard from './pages/SellerDashboard';
 import NotFound from './pages/NotFound';
 import Toast from './components/Toast';
@@ -42,6 +43,7 @@ function App() {
         <Route path="/" element={<Home session={session} setSession={setSession} />} />
         <Route path="/cart" element={<Cart session={session} setSession={setSession} />} />
         <Route path="/login" element={<Login setSession={setSession} />} />
+        <Route path="/signup" element={<Signup setSession={setSession} />} />
         <Route path="/seller-dashboard" element={<SellerDashboard session={session} setSession={setSession} />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
