@@ -4,7 +4,7 @@
 // TODO SUPABASE: No changes needed at launch
 
 import { useEffect, useState, useCallback } from 'react';
-import { Search, CheckCircle, ShoppingBag } from 'lucide-react';
+import { Search, CheckCircle, ShoppingBag, Shield, Truck, MessageCircle, ArrowUp } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductModal from '../components/ProductModal';
@@ -34,6 +34,16 @@ export default function Home({ session, setSession }: HomeProps) {
   const [category, setCategory] = useState<string>('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Back to top button visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -97,6 +107,57 @@ export default function Home({ session, setSession }: HomeProps) {
                 className="w-full pl-12 pr-4 py-3.5 rounded-full text-gray-900 text-sm shadow-lg focus:ring-2 focus:ring-white outline-none"
                 aria-label="Search products"
               />
+            </div>
+          </div>
+        </section>
+
+        {/* Trust Banner */}
+        <section className="bg-white border-b border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-gray-600">
+              <span className="flex items-center gap-1.5">
+                <Shield className="w-4 h-4 text-success" />
+                Verified Sellers Only
+              </span>
+              <span className="flex items-center gap-1.5">
+                <CheckCircle className="w-4 h-4 text-success" />
+                Admin-Approved Products
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Truck className="w-4 h-4 text-success" />
+                Campus Delivery
+              </span>
+              <span className="flex items-center gap-1.5">
+                <MessageCircle className="w-4 h-4 text-success" />
+                WhatsApp Ordering
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* How It Works */}
+        <section className="max-w-7xl mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Search className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="font-semibold text-gray-900 text-sm mb-1">Browse & Search</h3>
+              <p className="text-xs text-gray-500">Find products from verified ABSU students across 5 categories.</p>
+            </div>
+            <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Shield className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="font-semibold text-gray-900 text-sm mb-1">Verified Sellers</h3>
+              <p className="text-xs text-gray-500">Every seller is a real ABSU student, approved by our admin team.</p>
+            </div>
+            <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <MessageCircle className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="font-semibold text-gray-900 text-sm mb-1">Order via WhatsApp</h3>
+              <p className="text-xs text-gray-500">Checkout sends your order directly via WhatsApp for fast confirmation.</p>
             </div>
           </div>
         </section>
@@ -173,6 +234,17 @@ export default function Home({ session, setSession }: HomeProps) {
           seller={sellers[selectedProduct.seller_id] || null}
           onClose={() => setSelectedProduct(null)}
         />
+      )}
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-6 right-6 z-50 p-3 bg-primary text-white rounded-full shadow-lg hover:bg-primary-dark transition-all hover:scale-110"
+          aria-label="Back to top"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
       )}
     </div>
   );

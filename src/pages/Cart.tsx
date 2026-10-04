@@ -3,11 +3,11 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Minus, Plus, Trash2, ShoppingBag, MessageCircle } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingBag, MessageCircle, CheckCircle } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { getCart, updateCartQty, removeFromCart, clearCart, createOrder, getUserById } from '../db';
-import { WHATSAPP_NUMBER } from '../config';
+import { WHATSAPP_NUMBER, SITE_NAME } from '../config';
 import { showToast } from '../components/Toast';
 import type { CartItem } from '../db';
 import type { User } from '../data';
@@ -19,6 +19,7 @@ interface CartProps {
 
 export default function Cart({ session, setSession }: CartProps) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [sellers, setSellers] = useState<Record<string, User>>({});
   const [loading, setLoading] = useState(true);
   const [showCheckout, setShowCheckout] = useState(false);
   const [buyerName, setBuyerName] = useState(session?.name || '');
@@ -32,6 +33,15 @@ export default function Cart({ session, setSession }: CartProps) {
     setLoading(true);
     const cart = await getCart();
     setItems(cart);
+
+    // Load seller info for each unique seller
+    const sellerMap: Record<string, User> = {};
+    const uniqueSellerIds = [...new Set(cart.map(item => item.seller_id))];
+    for (const sellerId of uniqueSellerIds) {
+      const seller = await getUserById(sellerId);
+      if (seller) sellerMap[sellerId] = seller;
+    }
+    setSellers(sellerMap);
     setLoading(false);
   };
 
@@ -106,8 +116,6 @@ export default function Cart({ session, setSession }: CartProps) {
     showToast('Order placed! Redirecting to WhatsApp...', 'success');
   };
 
-  const SITE_NAME = 'ABSU Marketplace';
-
   if (loading) {
     return (
       <div className="min-h-screen bg-bg flex flex-col">
@@ -152,6 +160,14 @@ export default function Cart({ session, setSession }: CartProps) {
                   {/* Details */}
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-medium text-gray-900 truncate">{item.name}</h3>
+                    <div className="flex items-center gap-1">
+                      <p className="text-xs text-gray-500">
+                        by {sellers[item.seller_id]?.name || 'Seller'}
+                      </p>
+                      {sellers[item.seller_id]?.status === 'verified' && (
+                        <CheckCircle className="w-3 h-3 text-success" />
+                      )}
+                    </div>
                     <p className="text-sm text-gray-500">₦{item.price.toLocaleString()} each</p>
 
                     <div className="flex items-center justify-between mt-2">

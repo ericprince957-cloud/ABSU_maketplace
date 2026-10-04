@@ -6,6 +6,7 @@
 
 import { USE_SUPABASE } from './supabase-config';
 import { seedUsers, seedProducts, seedOrders, User, Product, Order } from './data';
+import { notifyCartChanged } from './cartEvents';
 
 // Re-export types for use in other files
 export type { User, Product, Order } from './data';
@@ -288,6 +289,7 @@ export async function addToCart(item: CartItem): Promise<CartItem[]> {
     cart.push({ ...item });
   }
   writeKey(KEYS.cart, cart);
+  notifyCartChanged();
   return cart;
 }
 
@@ -298,17 +300,20 @@ export async function updateCartQty(productId: string, qty: number): Promise<Car
     item.qty = Math.max(1, qty);
   }
   writeKey(KEYS.cart, cart);
+  notifyCartChanged();
   return cart;
 }
 
 export async function removeFromCart(productId: string): Promise<CartItem[]> {
   const cart = readKey<CartItem>(KEYS.cart).filter(c => c.product_id !== productId);
   writeKey(KEYS.cart, cart);
+  notifyCartChanged();
   return cart;
 }
 
 export async function clearCart(): Promise<void> {
   writeKey(KEYS.cart, []);
+  notifyCartChanged();
 }
 
 export async function getCartCount(): Promise<number> {
