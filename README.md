@@ -228,7 +228,7 @@ src/
 
 ## Real Verified Sellers
 
-The marketplace features 4 real verified sellers:
+The marketplace features 4 real verified sellers. **Products are added by sellers themselves** through the seller dashboard.
 
 1. **Vector Codes** (Web Development)
    - WhatsApp: 2347084547988
@@ -246,7 +246,7 @@ The marketplace features 4 real verified sellers:
    - WhatsApp: 2347064580909
    - Products: Women's wear, shoes, bags, men's wear, jewelry
 
-The **Directory Section** on the home page showcases these sellers with direct WhatsApp contact buttons.
+The **Directory Section** on the home page showcases these sellers with direct WhatsApp contact buttons. The product marketplace starts empty and sellers add their products through their dashboard.
 
 ## Demo Accounts
 
