@@ -4,9 +4,10 @@ A trusted peer-to-peer marketplace for Abia State University (ABSU) students. Bu
 
 ## Features
 
-- 🛍️ **Browse Products** — 5 categories: Fashion, Food, Textbooks, Electronics, Services
+- 🛍️ **Browse Products** — 7 categories: Fashion, Food, Textbooks, Electronics, Services, Web Development, Beauty
 - 🔍 **Search & Filter** — Real-time search by name, filter by category
 - ✅ **Verified Sellers** — Green badge for admin-approved sellers
+- 📇 **Seller Directory** — Browse real verified sellers with direct WhatsApp contact
 - 🛒 **Shopping Cart** — Add items, adjust quantities, view totals
 - 💬 **WhatsApp Checkout** — Orders sent directly via WhatsApp
 - 🏪 **Seller Dashboard** — Add, edit, delete products; track approval status
@@ -215,6 +216,7 @@ src/
 │   ├── Header.tsx       # Sticky header with search, cart counter, auth
 │   ├── Footer.tsx       # Site footer with links and trust info
 │   ├── ProductModal.tsx # Product detail modal with image gallery
+│   ├── Directory.tsx    # Verified sellers directory with WhatsApp contact
 │   └── Toast.tsx        # Toast notification system
 └── pages/
     ├── Home.tsx         # Marketplace home with hero, categories, grid
@@ -224,12 +226,33 @@ src/
     └── NotFound.tsx     # 404 page
 ```
 
+## Real Verified Sellers
+
+The marketplace features 4 real verified sellers:
+
+1. **Vector Codes** (Web Development)
+   - WhatsApp: 2347084547988
+   - Services: Standard websites, landing pages
+
+2. **Egbeike Precious Chukwuebuka** (Fashion)
+   - WhatsApp: 2349047587912
+   - Products: Kaftans, Scrubs, Shirts, Trousers
+
+3. **Uchechukwu Divine Chidiamara** (Beauty)
+   - WhatsApp: 2347013519900
+   - Products: Oil perfumes, nail tech services
+
+4. **Udo Favour Chinoyeremu** (Fashion)
+   - WhatsApp: 2347064580909
+   - Products: Women's wear, shoes, bags, men's wear, jewelry
+
+The **Directory Section** on the home page showcases these sellers with direct WhatsApp contact buttons.
+
 ## Demo Accounts
 
 - **Student**: Sign up with any email, or use `chinedu@student.absu.edu.ng`
-- **Seller (verified)**: Type `seller1` as username on login page
-- **Seller (pending)**: Sign up as seller, or use `ibrahim.musa@gmail.com`
-- **Banned seller**: `kenneth.udo@gmail.com` (will see error on login)
+- **Seller (verified)**: Type `seller1` as username on login page (logs in as Vector Codes)
+- **Other sellers**: Use their emails from the seller list above
 
 ## License
 

@@ -4,7 +4,7 @@
 export const WHATSAPP_NUMBER = "234XXXXXXXXXX"; // <-- CHANGE: the platform owner's WhatsApp number
 export const SITE_NAME = "ABSU Marketplace";
 
-export const CATEGORIES = ["Fashion", "Food", "Textbooks", "Electronics", "Services"] as const;
+export const CATEGORIES = ["Fashion", "Food", "Textbooks", "Electronics", "Services", "Web Development", "Beauty"] as const;
 export type Category = typeof CATEGORIES[number];
 
 export const DEPARTMENTS = [
@@ -27,5 +27,6 @@ export const DEPARTMENTS = [
   "Education",
   "Sociology",
   "History",
-  "Geography"
+  "Geography",
+  "Public Health"
 ] as const;
