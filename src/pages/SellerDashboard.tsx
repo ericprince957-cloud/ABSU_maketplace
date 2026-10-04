@@ -5,9 +5,9 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit3, Trash2, Package, CheckCircle, Clock, XCircle, ArrowLeft, AlertTriangle } from 'lucide-react';
+import { Plus, Edit3, Trash2, Package, CheckCircle, Clock, XCircle, ArrowLeft, AlertTriangle, LogOut, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getProductsBySeller, addProduct, updateProduct, deleteProduct, getUserById } from '../db';
+import { getProductsBySeller, addProduct, updateProduct, deleteProduct, getUserById, logoutUser } from '../db';
 import { CATEGORIES } from '../config';
 import { showToast } from '../components/Toast';
 import type { Product, User } from '../data';
@@ -74,6 +74,12 @@ export default function SellerDashboard({ session, setSession }: SellerDashboard
     setEditingProduct(null);
   };
 
+  const handleLogout = async () => {
+    await logoutUser();
+    setSession(null);
+    navigate('/');
+  };
+
   const handleFormSubmit = async (productData: Partial<Product>) => {
     if (!session) return;
 
@@ -104,6 +110,7 @@ export default function SellerDashboard({ session, setSession }: SellerDashboard
   const totalProducts = products.length;
   const approved = products.filter(p => p.status === 'approved').length;
   const pending = products.filter(p => p.status === 'pending').length;
+  const rejected = products.filter(p => p.status === 'rejected').length;
 
   if (!session || session.role !== 'seller') {
     return null; // Will redirect
@@ -113,9 +120,9 @@ export default function SellerDashboard({ session, setSession }: SellerDashboard
     <div className="min-h-screen bg-bg">
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-3">
-            <Link to="/" className="text-gray-500 hover:text-gray-700 transition-colors">
+            <Link to="/" className="text-gray-500 hover:text-gray-700 transition-colors" title="Back to marketplace">
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
@@ -123,13 +130,30 @@ export default function SellerDashboard({ session, setSession }: SellerDashboard
               <p className="text-xs text-gray-500">Welcome, {session.name}</p>
             </div>
           </div>
-          <button
-            onClick={() => { setShowForm(true); setEditingProduct(null); }}
-            className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Add Product</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-200 rounded-lg transition-colors"
+            >
+              <Eye className="w-4 h-4" />
+              View Store
+            </Link>
+            <button
+              onClick={() => { setShowForm(true); setEditingProduct(null); }}
+              className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Add Product</span>
+            </button>
+            <button
+              onClick={handleLogout}
+              className="p-2 text-gray-500 hover:text-danger hover:bg-red-50 rounded-lg transition-colors"
+              title="Logout"
+              aria-label="Logout"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -148,11 +172,11 @@ export default function SellerDashboard({ session, setSession }: SellerDashboard
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
             <Package className="w-6 h-6 text-secondary mx-auto mb-1" />
             <p className="text-2xl font-bold text-gray-900">{totalProducts}</p>
-            <p className="text-xs text-gray-500">Total Products</p>
+            <p className="text-xs text-gray-500">Total</p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
             <CheckCircle className="w-6 h-6 text-success mx-auto mb-1" />
@@ -163,6 +187,11 @@ export default function SellerDashboard({ session, setSession }: SellerDashboard
             <Clock className="w-6 h-6 text-primary mx-auto mb-1" />
             <p className="text-2xl font-bold text-primary">{pending}</p>
             <p className="text-xs text-gray-500">Pending</p>
+          </div>
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
+            <XCircle className="w-6 h-6 text-danger mx-auto mb-1" />
+            <p className="text-2xl font-bold text-danger">{rejected}</p>
+            <p className="text-xs text-gray-500">Rejected</p>
           </div>
         </div>
 

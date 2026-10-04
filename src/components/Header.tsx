@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, LogOut, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getCartCount, logoutUser } from '../db';
+import { subscribeToCart } from '../cartEvents';
 import { SITE_NAME } from '../config';
 import type { User as UserType } from '../data';
 
@@ -26,9 +27,9 @@ export default function Header({ session, setSession, showSearch, onSearch, sear
       getCartCount().then(setCartCount);
     };
     updateCount();
-    // Listen for storage changes (cart updates from other components)
-    const interval = setInterval(updateCount, 500);
-    return () => clearInterval(interval);
+    // Subscribe to cart change events for instant updates
+    const unsubscribe = subscribeToCart(updateCount);
+    return () => unsubscribe();
   }, []);
 
   const handleLogout = async () => {
