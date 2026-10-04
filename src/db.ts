@@ -19,7 +19,11 @@ const KEYS = {
   session: 'absu_session',
   cart: 'absu_cart',
   adminAuth: 'absu_admin_auth',
+  version: 'absu_data_version',
 };
+
+// Data version - increment this to force reset localStorage data
+const DATA_VERSION = '2.0';
 
 // Helper: read JSON from localStorage
 function readKey<T>(key: string): T[] {
@@ -55,6 +59,17 @@ export async function seedIfEmpty(): Promise<void> {
     // if (data && data.length === 0) { await supabase.from('profiles').insert(seedUsers); }
     return;
   }
+  
+  // Check data version - if changed, reset all data
+  const currentVersion = localStorage.getItem(KEYS.version);
+  if (currentVersion !== DATA_VERSION) {
+    // Version mismatch - clear old data and re-seed
+    localStorage.removeItem(KEYS.users);
+    localStorage.removeItem(KEYS.products);
+    localStorage.removeItem(KEYS.orders);
+    localStorage.setItem(KEYS.version, DATA_VERSION);
+  }
+  
   const users = readKey<User>(KEYS.users);
   const products = readKey<Product>(KEYS.products);
   const orders = readKey<Order>(KEYS.orders);
