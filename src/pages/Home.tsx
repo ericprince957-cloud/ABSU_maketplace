@@ -8,6 +8,7 @@ import { Search, CheckCircle, ShoppingBag, Shield, Truck, MessageCircle, ArrowUp
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductModal from '../components/ProductModal';
+import Directory from '../components/Directory';
 import { getApprovedProducts, getUserById } from '../db';
 import { CATEGORIES } from '../config';
 import type { Product, User } from '../data';
@@ -134,6 +135,9 @@ export default function Home({ session, setSession }: HomeProps) {
             </div>
           </div>
         </section>
+
+        {/* Directory Section - Real Verified Sellers */}
+        <Directory />
 
         {/* How It Works */}
         <section className="max-w-7xl mx-auto px-4 py-8">
