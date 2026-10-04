@@ -208,11 +208,15 @@ export default function Home({ session, setSession }: HomeProps) {
           ) : products.length === 0 ? (
             <div className="text-center py-16">
               <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-600 mb-2">No products found</h3>
-              <p className="text-sm text-gray-500">
-                {search ? `No products match "${search}".` : 'No products in this category yet.'}
-                {' '}Try a different search or category.
+              <h3 className="text-lg font-semibold text-gray-600 mb-2">No products available yet</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                {search ? `No products match "${search}".` : 'Sellers will be adding products soon!'}
               </p>
+              {!search && (
+                <p className="text-xs text-gray-400">
+                  Browse our verified sellers above or contact them directly via WhatsApp.
+                </p>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
