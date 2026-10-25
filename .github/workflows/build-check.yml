@@ -27,14 +27,13 @@ jobs:
       - name: Publish logs
         if: always()
         run: |
-          set -e
           git config user.name "build-bot"
           git config user.email "build-bot@users.noreply.github.com"
           mkdir -p logs
           STAMP=$(date -u +%Y%m%d-%H%M%S)
-          cp install.log "logs/install-${STAMP}.log" 2>/dev/null || true
-          cp build-output.log "logs/build-${STAMP}.log" 2>/dev/null || true
-          git checkout -b build-logs || git checkout build-logs
-          git add logs
+          cp install.log "logs/install-${STAMP}.txt" 2>/dev/null || true
+          cp build-output.log "logs/build-${STAMP}.txt" 2>/dev/null || true
+          git checkout -b build-logs2 || git checkout build-logs2
+          git add -f logs
           git commit -m "Build logs ${STAMP}" || echo "nothing to commit"
-          git push origin build-logs -f
+          git push origin build-logs2 -f
