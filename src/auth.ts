@@ -1,10 +1,11 @@
-// Auth utilities - Ready for Supabase integration
-// All functions have SUPABASE SWAP comments for easy migration
-// TODO SUPABASE: Replace localStorage mock with supabase.auth calls
+// Auth utilities - Supabase-backed with localStorage mock fallback
 
-import { USE_SUPABASE } from './supabase-config';
+import { USE_SUPABASE, SUPABASE_READY } from './supabase-config';
+import { supabase } from './supabase';
 import { notifyCartChanged } from './cartEvents';
-import { loginUser, createUser, findUserByEmail, logoutUser, getSession } from './db';
+import { loginUser, createUser, findUserByEmail, logoutUser, getSession, User } from './db';
+
+const USE_AUTH = USE_SUPABASE && SUPABASE_READY;
 
 // Auth result shape
 export interface AuthResult {
@@ -14,24 +15,18 @@ export interface AuthResult {
 }
 
 // Login function
-// SUPABASE SWAP: const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 export async function loginWithEmail(email: string, password: string): Promise<AuthResult> {
-  if (USE_SUPABASE) {
-    // const { data, error } = await supabase.auth.signInWithPassword({
-    //   email,
-    //   password
-    // });
-    // if (error) return { success: false, error: error.message };
-    // return { success: true, user: data.user };
-    return { success: false, error: 'Supabase not configured' };
+  if (USE_AUTH) {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { success: false, error: error.message };
+    return { success: true, user: data.user };
   }
-  
+
   return loginUser(email, password);
 }
 
-// Signup function
-// SUPABASE SWAP: const { data, error } = await supabase.auth.signUp({ email, password })
-// Then insert profile into profiles table
+// Signup function — creates auth user, then inserts the profile row.
+// Sellers start 'pending', students start 'verified' (matches mock behaviour).
 export async function signupWithEmail(
   email: string,
   password: string,
@@ -43,39 +38,37 @@ export async function signupWithEmail(
     category?: string;
   }
 ): Promise<AuthResult> {
-  if (USE_SUPABASE) {
-    // const { data, error } = await supabase.auth.signUp({
-    //   email,
-    //   password
-    // });
-    // if (error) return { success: false, error: error.message };
-    // 
-    // // Insert profile
-    // const { error: profileError } = await supabase
-    //   .from('profiles')
-    //   .insert([{
-    //     id: data.user.id,
-    //     name: profileData.name,
-    //     email,
-    //     phone: profileData.phone,
-    //     department: profileData.department,
-    //     role: profileData.role,
-    //     status: profileData.role === 'seller' ? 'pending' : 'verified',
-    //     category: profileData.category
-    //   }]);
-    // 
-    // if (profileError) return { success: false, error: profileError.message };
-    // return { success: true, user: data.user };
-    return { success: false, error: 'Supabase not configured' };
+  if (USE_AUTH) {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) return { success: false, error: error.message };
+    if (!data.user) return { success: false, error: 'Sign-up failed. Please try again.' };
+
+    // Insert profile (uses the auth user id as primary key)
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .insert([{
+        id: data.user.id,
+        name: profileData.name,
+        email: email.toLowerCase(),
+        phone: profileData.phone,
+        department: profileData.department,
+        role: profileData.role,
+        status: profileData.role === 'seller' ? 'pending' : 'verified',
+        category: profileData.category || null,
+      }])
+      .select()
+      .single();
+
+    if (profileError) return { success: false, error: profileError.message };
+    return { success: true, user: profile };
   }
-  
-  // Check if email exists
+
+  // ---- Mock mode ----
   const existing = await findUserByEmail(email);
   if (existing) {
     return { success: false, error: 'An account with this email already exists' };
   }
-  
-  // Create user
+
   const user = await createUser({
     name: profileData.name,
     email: email.toLowerCase(),
@@ -85,49 +78,39 @@ export async function signupWithEmail(
     status: profileData.role === 'seller' ? 'pending' : 'verified',
     category: profileData.category,
   });
-  
+
   // Auto-login
   localStorage.setItem('absu_session', JSON.stringify(user));
   notifyCartChanged();
-  
+
   return { success: true, user };
 }
 
 // Logout function
-// SUPABASE SWAP: await supabase.auth.signOut()
 export async function logout(): Promise<void> {
-  if (USE_SUPABASE) {
-    // await supabase.auth.signOut();
+  if (USE_AUTH) {
+    await supabase.auth.signOut();
     return;
   }
-  
+
   await logoutUser();
 }
 
-// Get current session
-// SUPABASE SWAP: const { data: { session } } = await supabase.auth.getSession()
-export async function getCurrentSession(): Promise<any> {
-  if (USE_SUPABASE) {
-    // const { data: { session } } = await supabase.auth.getSession();
-    // return session?.user || null;
-    return null;
-  }
-  
+// Get current session (returns the profile, not the raw auth user)
+export async function getCurrentSession(): Promise<User | null> {
   return getSession();
 }
 
 // Password reset request
-// SUPABASE SWAP: await supabase.auth.resetPasswordForEmail(email, { redirectTo: '...' })
 export async function requestPasswordReset(email: string): Promise<AuthResult> {
-  if (USE_SUPABASE) {
-    // const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    //   redirectTo: `${window.location.origin}/reset-password`
-    // });
-    // if (error) return { success: false, error: error.message };
-    // return { success: true };
-    return { success: false, error: 'Supabase not configured' };
+  if (USE_AUTH) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/#/reset-password',
+    });
+    if (error) return { success: false, error: error.message };
+    return { success: true };
   }
-  
+
   // Mock - just return success
   return { success: true };
 }
@@ -155,13 +138,13 @@ export function validatePhone(phone: string): string | null {
 
 export function getPasswordStrength(password: string): { score: number; label: string; color: string } {
   let score = 0;
-  
+
   if (password.length >= 6) score++;
   if (password.length >= 10) score++;
   if (/[A-Z]/.test(password)) score++;
   if (/[0-9]/.test(password)) score++;
   if (/[^A-Za-z0-9]/.test(password)) score++;
-  
+
   if (score <= 1) return { score, label: 'Weak', color: 'bg-red-500' };
   if (score <= 2) return { score, label: 'Fair', color: 'bg-orange-500' };
   if (score <= 3) return { score, label: 'Good', color: 'bg-yellow-500' };
