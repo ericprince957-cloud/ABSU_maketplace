@@ -1,9 +1,8 @@
 // Header component - shared across all pages
-// Shows logo, search, cart counter, login/account link
-// TODO SUPABASE: No changes needed at launch
+// Shows logo, search, cart counter, login/account link, theme toggle
 
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, LogOut, Search } from 'lucide-react';
+import { ShoppingCart, User, LogOut, Search, Sun, Moon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getCartCount } from '../db';
 import { logout } from '../auth';
@@ -21,6 +20,9 @@ interface HeaderProps {
 
 export default function Header({ session, setSession, showSearch, onSearch, searchValue }: HeaderProps) {
   const [cartCount, setCartCount] = useState(0);
+  const [dark, setDark] = useState<boolean>(() =>
+    typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,6 +34,15 @@ export default function Header({ session, setSession, showSearch, onSearch, sear
     const unsubscribe = subscribeToCart(updateCount);
     return () => unsubscribe();
   }, []);
+
+  const toggleTheme = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle('dark', next);
+    try {
+      localStorage.setItem('absu_theme', next ? 'dark' : 'light');
+    } catch (e) { /* ignore */ }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -68,8 +79,22 @@ export default function Header({ session, setSession, showSearch, onSearch, sear
             </div>
           )}
 
-          {/* Right side: Cart + Auth */}
+          {/* Right side: Theme + Cart + Auth */}
           <div className="flex items-center gap-3">
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={dark ? 'Light mode' : 'Dark mode'}
+            >
+              {dark ? (
+                <Sun className="w-5 h-5 text-gray-600" />
+              ) : (
+                <Moon className="w-5 h-5 text-gray-600" />
+              )}
+            </button>
+
             {/* Cart */}
             <Link
               to="/cart"

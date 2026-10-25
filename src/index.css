@@ -74,3 +74,63 @@ textarea:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
+
+/* ==================== DARK MODE ====================
+   Applied when <html> has the "dark" class (toggle in Header).
+   Remaps the common light-mode utilities to dark equivalents. */
+
+html.dark body {
+  background-color: #0b1220;
+  color: #e5e7eb;
+}
+
+/* Scrollbar */
+html.dark ::-webkit-scrollbar-track { background: #0f172a; }
+html.dark ::-webkit-scrollbar-thumb { background: #334155; }
+
+/* Surfaces */
+html.dark .bg-white   { background-color: #151e31 !important; }
+html.dark .bg-gray-50 { background-color: #0b1220 !important; }
+html.dark .bg-gray-100 { background-color: #1e293b !important; }
+html.dark .bg-gray-200 { background-color: #334155 !important; }
+html.dark .bg-bg       { background-color: #0b1220 !important; }
+
+/* Text colors */
+html.dark .text-gray-900 { color: #f1f5f9 !important; }
+html.dark .text-gray-800 { color: #e2e8f0 !important; }
+html.dark .text-gray-700 { color: #d1d5db !important; }
+html.dark .text-gray-600 { color: #9ca3af !important; }
+html.dark .text-gray-500 { color: #9ca3af !important; }
+html.dark .text-gray-400 { color: #8899b0 !important; }
+html.dark .text-black   { color: #f8fafc !important; }
+html.dark .text-secondary { color: #93c5fd !important; }
+
+/* Borders */
+html.dark .border-gray-100 { border-color: #1e293b !important; }
+html.dark .border-gray-200 { border-color: #334155 !important; }
+html.dark .border-gray-300 { border-color: #475569 !important; }
+
+/* Hover states */
+html.dark .hover\:bg-gray-50:hover  { background-color: #1e293b !important; }
+html.dark .hover\:bg-gray-100:hover { background-color: #334155 !important; }
+html.dark .hover\:bg-white:hover   { background-color: #1e293b !important; }
+
+/* Inputs sit on the dark surface */
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background-color: #0f172a;
+  color: #e5e7eb;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748b;
+}
+
+/* Cards & shadows read better without the glow */
+html.dark .product-card:hover {
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+}
+html.dark .shadow-md, html.dark .shadow-lg, html.dark .shadow-xl {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4) !important;
+}
